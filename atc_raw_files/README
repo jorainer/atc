@@ -1,0 +1,8 @@
+## These files are the "raw" files used to generate the data.frames for the atc
+## package. German atc codes were extracted from the xls sheet from www.wido.de, this
+## included also the actual therapeutics, which are provided in "atcFifthLevel.txt".
+## English category names were copy-pasted from the http://atccodes.com page and pasted
+## into the text file ATC_categories_raw_atccode_com.txt. This was done on the
+## 10.02.2016 (there is however no information on the version provided). The version
+## for the german codes is from 2016.
+## Remaining missing english names were extracted from Wikipedia.

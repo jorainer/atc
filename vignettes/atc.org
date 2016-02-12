@@ -1,0 +1,224 @@
+#+TITLE: Working with ATC codes
+#+AUTHOR:    Johannes Rainer
+#+EMAIL:     johannes.rainer@eurac.edu
+#+DESCRIPTION:
+#+KEYWORDS:
+#+LANGUAGE:  en
+#+OPTIONS: ^:{} toc:nil
+#+PROPERTY: exports code
+#+PROPERTY: session *R*
+
+#+EXPORT_SELECT_TAGS: export
+#+EXPORT_EXCLUDE_TAGS: noexport
+
+#+BEGIN_HTML
+---
+title: "Working with ATC codes"
+graphics: yes
+output:
+  BiocStyle::html_document:
+    toc_depth: 2
+  BiocStyle::pdf_document:
+    toc_depth: 2
+vignette: >
+  %\VignetteIndexEntry{Working with ATC codes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteDepends{atc}
+  %\VignettePackage{atc}
+  %\VignetteKeywords{AnnotationData,Homo_sapiens}
+bibliography: references.bib
+csl: biomed-central.csl
+references:
+- id: dummy
+  title: no title
+  author:
+  - family: noname
+    given: noname
+---
+
+**Package**: `r Biocpkg("atc")`<br />
+**Authors**: `r packageDescription("atc")$Author`<br />
+**Modified**: 10 February, 2016<br />
+**Compiled**: `r date()`
+
+#+END_HTML
+
+* How to export this to a =Rmd= vignette			   :noexport:
+
+Use =ox-ravel= to export this file as an R markdown file (=C-c C-e m r=). That
+way we don't need to edit the resulting =Rmd= file.
+
+* How to export this to a =Rnw= vignette 			   :noexport:
+
+*Note*: this is deprecated! Use the =Rmd= export instead!
+
+Use =ox-ravel= from the =orgmode-accessories= package to export this file to a
+=Rnw= file. After export edit the generated =Rnw= in the following way:
+
+1) Delete all =\usepackage= commands.
+2) Move the =<<style>>= code chunk before the =\begin{document}= and before
+   =\author=.
+3) Move all =%\Vignette...= lines at the start of the file (even before
+   =\documentclass=).
+4) Replace =\date= with =\date{Modified: 21 October, 2013. Compiled: \today}=
+5) Eventually search for all problems with =texttt=, i.e. search for pattern
+   ="==.
+
+Note: use =:ravel= followed by the properties for the code chunk headers,
+e.g. =:ravel results='hide'=. Other options for knitr style options are:
++ =results=: ='hide'= (hides all output, not warnings or messages), ='asis'=,
+  ='markup'= (the default).
++ =warning=: =TRUE= or =FALSE= whether warnings should be displayed.
++ =message=: =TRUE= or =FALSE=, same as above.
++ =include=: =TRUE= or =FALSE=, whether the output should be included into the
+  final document (code is still evaluated).
+
+* Introduction
+
+This package provides the Anatomical Therapeutical Chemical (ATC) Classification data
+and functions that facilitate working with these. The ATC data is defined by the
+WHO Collaborating Centre for Drug Statistics Methodology (Oslo, Norway), which
+holds also the copyright for the data and dos not allow distribution for
+commercial purposes.
+
+The data set provided within this package has been compiled manually from data
+files from the /Wissenschaftliches Institut der AOK/ (http://www.wido.de), and
+from the online resources http://atccodes.com and Wikipedia.
+
+In future it would be better to fetch the data directly from the official web
+site http://www.whocc.no/, but this would have to be queried and parsed in an
+automated fashion.
+
+The ATC Classification system is used for the classification of active
+ingredients of drugs according to the organ or system on which they act and
+their therapeutic, pharmacological and chemical properties. In this system,
+drugs are classified into groups at 5 different levels:
+
+- *First level*: indicates the anatomical main group and consists of one letter.
+
+- *Second level*: indicates the therapeutic main group and consists of two
+  digits.
+
+- *Third level*: indicates the therapeutic/pharmacological subgroup and consists
+  of one letter.
+
+- *Fourth level*: indicates the chemical/therapeutic/pharmacological subgroup
+  and consists of one letter.
+
+- *Fifth level*: indicates the chemical substance and consists of two
+  digits. For the 5th level entries also defined daily dosages (ddd) may be
+  provided.
+
+Note that national versions of the ATC classification exist with eventual
+additional codes and ddds.
+
+
+* Extracting the ATC codes from the WHOCC web page
+
+
+
+* Parse the official web site					   :noexport:
+:PROPERTIES:
+:eval: never
+:END:
+
+http://www.whocc.no/atc_ddd_index/
+
+#+BEGIN_SRC R
+  library(RCurl)
+  library(XML)
+
+  basequer <- "http://www.whocc.no/atc_ddd_index/?code="
+
+  Plain <- readLines(paste0(basequer, "A"))
+
+  ##docHtml <- htmlTreeParse(paste0(basequer, "A"))
+
+  doc <- htmlParse(paste0(basequer, "A"))
+  Test <- getNodeSet(doc, "//div[@id='content']")
+  ## That would be a lever 1 parse...
+  ## Would have to extract all a
+  As <- getNodeSet(doc, "//div[@id='content']//a")
+
+  enc <- "utf-8"
+  doc2 <- htmlParse(paste0(basequer, "A01AA"), encoding=enc)
+  Test <- getNodeSet(doc2, "//div[@id='content']")
+  ## Here I could start extracting level 5...
+  Table <- getNodeSet(doc2, "//div[@id='content']//table")
+  As <- getNodeSet(doc2, "//div[@id='content']//a")
+  ## Should be pretty simple though... follow all links up to level 5.
+  Table <- readHTMLTable(doc2, encoding=enc)
+
+
+  ## So, what should the function do: first we have a toquery vector, loop always through that
+  ## and perform a query on one of the ATCs, if that was done, remove the value from the
+  ## toquery
+
+  ## x should be an XMLNodeSet
+  .extractFromA <- function(x){
+      if(!is(x, "XMLNodeSet"))
+          stop("Don't know what to do with x, should be an XMLNodeSet...")
+      Values <- unlist(lapply(x, xmlValue))
+      Attrs <- lapply(x, xmlAttrs)
+      atcC <- unlist(lapply(Attrs, function(z){
+          if(!any(names(z) == "href"))
+              return(NA)
+          z <- z["href"]
+          ## Now split on &
+          spl <- unlist(strsplit(z, split="&"))
+          at <- gsub(spl[1], pattern="./?code=", replacement="", fixed=TRUE)
+          return(at)
+      }), use.names=FALSE)
+      return(cbind(key=atcC, name=Values))
+  }
+
+  crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=",
+                          encoding="utf-8"){
+      ## That's the vector we're using to define what to read...
+      if(!missing(codes)){
+          toquery <- codes
+      }else{
+          toquery <- c("A", "C")
+      }
+      ## That's the vector of stuff we don't want.
+      excludeByName <- c("New search", "Show text", "List of")
+      atcCodes <- character()
+      atcNames <- character()
+      while(length(toquery) > 0){
+          currentAtc <- toquery[1]
+          ## Kick out the present ATC code.
+          toquery <- toquery[-1]
+          doc <- htmlParse(paste0(baseurl, currentAtc), encoding=encoding)
+          ## Extract the links from the content div.
+          as <- getNodeSet(doc, "//div[@id='content']//a")
+          if(length(as) == 0)
+              stop("Something went wrong! Did not get the expected data.")
+          res <- .extractFromA(as)
+          torem <- unlist(lapply(excludeByName, function(y){
+              return(grep(res[, 2], pattern=y))
+          }))
+          if(length(torem) > 0)
+              res <- res[-torem, , drop=FALSE]
+          atcCodes <- c(atcCodes, res[, 1])
+          atcNames <- c(atcNames, res[, 2])
+          ## Parse the html table:
+          theTable <- readHTMLTable(doc)
+          ## Next we want to add the entries.
+      }
+      return(cbind(key=atcCodes, name=atcNames))
+  }
+
+  Test <- crunchWHOCC(codes="A01AA")
+#+END_SRC
+
+
+
+* TODOs								   :noexport:
+
+** TODO Implement a parser for the WHO web page.
+** TODO Implement the =atcData= object/class.
+** TODO Implement all required methods [/]
+
+
+* References

@@ -1,0 +1,20 @@
+#+TITLE:Data package providing ATC codes
+#+AUTHOR: Johannes Rainer
+#+email: johannes.rainer@eurac.edu
+
+
+* =atc=: data package providing ATC codes
+
+This package provides data from the WHO Collaborating Centre for Drug Statistics
+Methodology.
+
+For more information please refer to the [[file:vignettes/atc.org]] file.
+
+
+** Copyright of the data
+
+WHO Collaborating Centre for Drug Statistics Methodology, Oslo, Norway.
+Use of all or parts of the material requires reference to the WHO Collaborating
+Centre for Drug Statistics Methodology. Copying and distribution for commercial
+purposes is not allowed. Changing or manipulating the material is not allowed.
+

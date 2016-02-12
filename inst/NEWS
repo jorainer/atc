@@ -1,0 +1,8 @@
+CHANGES IN VERSION 0.0.1
+------------------------
+
+NEW FEATURES
+    o Added SQLite database.
+    o Implemented AtcDb object with methods: show, dbconn, as.data.frame,
+      keys, atcData.
+

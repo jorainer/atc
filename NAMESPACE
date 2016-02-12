@@ -1,0 +1,17 @@
+import(utils)
+import(methods)
+import(BiocGenerics)
+importFrom(DBI, dbDriver)
+import(RSQLite)
+import(XML)
+importMethodsFrom(AnnotationDbi, dbconn, columns, keytypes, keys,
+                  select, mapIds)
+## importClassesFrom(AnnotationHub, AnnotationHub)
+## importMethodsFrom(AnnotationHub, query, mcols)
+
+## Export functions
+export(AtcDb)
+## Export classes
+exportClasses("AtcDb")
+exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns")
+
