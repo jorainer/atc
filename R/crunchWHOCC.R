@@ -3,6 +3,8 @@
 ##
 ##  Extract the ATC data directly from the WHOCC web page by recursively
 ##  querying the web page.
+##  The function returns 3 data.frames: atc, ddd and metadata (these are the 3
+##  tables on which we can build the database).
 ####------------------------------------------------------------
 crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=",
                         encoding="utf-8"){
@@ -42,15 +44,21 @@ crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=
         }))
         if(length(torem) > 0)
             res <- res[-torem, , drop=FALSE]
+        ## Eventually skip all atcCodes that have a level <= the level of the currentAtc.
+        ## currentAtcLevel <- levelFromAtc(currentAtc)
+        ## gotAtcLevels <- levelFromAtc(atcCodes)
+
         atcCodes <- c(atcCodes, res[, 1])
         atcNames <- c(atcNames, res[, 2])
+
         ## Parse the html table:
         theTable <- readHTMLTable(doc)
         if(length(theTable) > 0){
             ## Process the table...
             theTable <- theTable[[1]]
             if(!all(c("ATC code", "DDD", "U", "Adm.R", "Note") %in% colnames(theTable))){
-                warning("The extracted table is not in the expected format for ATC: ", currentAtc)
+                warning("The extracted table is not in the expected format for ATC: ",
+                        currentAtc)
             }else{
                 theTable <- theTable[theTable[, "DDD"] != "", , drop=FALSE]
                 if(nrow(theTable) > 0){
@@ -86,7 +94,27 @@ crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=
         idx <- which(ddd[, 1] == "")
     }
     ddd <- unique(ddd)
-    return(list(atc=atc, ddd=ddd))
+
+    ## Now add the "level" column to atc:
+    atc <- data.frame(atc, level=levelFromAtc(as.character(atc[, "key"])),
+                      stringsAsFactors=FALSE)
+    ## Define the metadata.
+    met <- data.frame(name=c("Db type",
+                             "Supporting package",
+                             "Db created by",
+                             "Creation time",
+                             "sources",
+                             "querycodes",
+                             "DBSCHEMAVERSION"),
+                      value=c("AtcDb",
+                              "atc",
+                              "",
+                              as.character(Sys.Date()),
+                              baseurl,
+                              paste0(toquery, collapse=","),
+                              "1.0"), stringsAsFactors=FALSE)
+
+    return(list(atc=atc, ddd=ddd, metadata=met))
 }
 
 

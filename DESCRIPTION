@@ -1,7 +1,7 @@
 Package: atc
 Type: Package
 Title: Data package providing ATC codes
-Version: 0.0.1
+Version: 0.1.0
 Author: J. Rainer
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
 Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML
@@ -11,7 +11,7 @@ VignetteBuilder: knitr
 Description: Data package providing the Anatomical Therapeutic Chemical Classification
 	     (ATC) data. Up to ATC level 4 labels are provided in english and german,
 	     ATC level 5 data is only available in german.
-Collate: Classes.R Generics.R Constructors.R Methods-AtcDb.R crunchWHOCC.R zzz.R
+Collate: Classes.R Generics.R Constructors.R Methods-AtcDb.R crunchWHOCC.R utils.R zzz.R
 biocViews: AnnotationData,Homo_sapiens
 License: MIT + file LICENSE
 Copyright: WHO Collaborating Centre for Drug Statistics Methodology, Oslo, Norway. Use of all

@@ -10,7 +10,7 @@ importMethodsFrom(AnnotationDbi, dbconn, columns, keytypes, keys,
 ## importMethodsFrom(AnnotationHub, query, mcols)
 
 ## Export functions
-export(AtcDb)
+export(AtcDb, crunchWHOCC)
 ## Export classes
 exportClasses("AtcDb")
 exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns")

@@ -60,11 +60,12 @@ setMethod("columns", "AtcDb", function(x){
 ####------------------------------------------------------------
 setMethod("as.data.frame", "AtcDb", function(x, ...){
     cols <- unlist(.checkColumns(x), use.names=FALSE)
-    Res <- dbGetQuery(dbconn(x), paste0("select ",
-                                        paste0(cols, collapse=","),
-                                        " from atc left join ddd on (atc.key=ddd.key) order by atc.key;"))
+    Res <- dbGetQuery(dbconn(x),
+                      paste0("select ",
+                             paste0(cols, collapse=","),
+                             " from atc left join ddd on (atc.key=ddd.key) order by atc.key;"))
     ## setting rownames
-    rownames(Res) <- Res$key
+    ## rownames(Res) <- Res$key
     return(Res)
 })
 
@@ -96,8 +97,8 @@ setMethod("atcData", "AtcDb", function(x, columns, key, level, pattern){
     query <- c(query, "order by atc.key")
     ## return(paste0(query, collapse=" "))
     Res <- dbGetQuery(dbconn(x), paste0(query, collapse=" "))
-    if(any(colnames(Res) == "key"))
-        rownames(Res) <- Res$key
+    ## if(any(colnames(Res) == "key"))
+    ##     rownames(Res) <- Res$key
     return(Res)
 })
 
@@ -172,9 +173,11 @@ setMethod("atcData", "AtcDb", function(x, columns, key, level, pattern){
     }else{
         ## Wrap % around the pattern...
         x <- sQuote(paste0("%", x, "%"))
-        tmp <- c(paste("atc.name_de like", x), paste("atc.name_en like", x))
-        tmp <- paste(tmp, collapse=" or ")
-        return(paste0("(", tmp, ") collate nocase"))
+        tmp <- paste("atc.name like", x, "collate nocase")
+        return(tmp)
+        ## tmp <- c(paste("atc.name_de like", x), paste("atc.name_en like", x))
+        ## tmp <- paste(tmp, collapse=" or ")
+        ## return(paste0("(", tmp, ") collate nocase"))
     }
 }
 

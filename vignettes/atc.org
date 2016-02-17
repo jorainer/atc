@@ -114,8 +114,43 @@ Note that national versions of the ATC classification exist with eventual
 additional codes and ddds.
 
 
-* Extracting the ATC codes from the WHOCC web page
+* Extract ATC codes from the official WHOCC web page
 
+The official WHOCC web page provides a simple search functionality to retrieve
+data for a user specified ATC code. The =crunchWHOCC= function we use below
+recursively retrieves ATC data from this web page starting from either a
+user-specified ATC code, or if not provided, for all level 1 codes and above.
+
+#+BEGIN_SRC R :ravel eval=FALSE
+  ## Retrieve all data from the WHOCC web page.
+  whoccAtc <- crunchWHOCC()
+#+END_SRC
+
+The function returns 3 =data.frames= that can be used to build a RSQLite
+database such as provided by the =atc= package.
+
+#+BEGIN_SRC R :ravel eval=FALSE
+  library(RSQLite)
+
+  ## Connect to the database.
+  con <- dbConnect(dbDriver("SQLite"), dbname="atc.sqlite")
+  ## Store the 3 tables.
+  dbWriteTable(con, name="atc", whoccAtc$atc, row.names=FALSE)
+  dbWriteTable(con, name="ddd", whoccAtc$ddd, row.names=FALSE)
+  dbWriteTable(con, name="metadata", whoccAtc$metadata, row.names=FALSE)
+  ## Create indices for faster access.
+  dbGetQuery(con, "create index key_idx on atc (key);")
+  dbGetQuery(con, "create index level_idx on atc (level);")
+  dbGetQuery(con, "create index ddd_key_idx on ddd (key);")
+  dbDisconnect(con)
+#+END_SRC
+
+A =AtcDb= object can then be created using.
+
+#+BEGIN_SRC R :ravel eval=FALSE
+  atcDb <- AtcDb("atc.sqlite")
+  atcDb
+#+END_SRC
 
 
 * Parse the official web site					   :noexport:
@@ -214,11 +249,46 @@ http://www.whocc.no/atc_ddd_index/
 
 
 
+* Database layout
+
+The database consists of 3 tables, =atc=, =ddd= and =metadata=. The columns for
+the individual tables are listed below.
+
++ *atc*: the /main/ table providing the mapping between the ATC codes (also
+  called keys) and their names.
+  - =key=: column containing the ATC codes.
+  - =name=: column with the name associated with the key.
+  - =level=: the level of the ATC code (from 1 to 5).
+
++ *ddd*: the table providing the /defined daily dosage/ (ddd) for the ATC
+  entries of level 5. Thus, this table contains only values for codes of level
+  5, but not for all of them. Note also, that this table can contain multiple
+  dosages for the same ATC code.
+  - =key=: the ATC code.
+  - =ddd=: the defined daily dose.
+  - =unit=: the unit of the dose.
+  - =administration_route=: the route of administration of the drug.
+  - =note=: optional additional information.
+
++ *metadata*: table providing additional information (creation time, source
+  etc). Values are stored as key-value pairs.
+  - =name=: the name of the key.
+  - =value=: its value.
+
 * TODOs								   :noexport:
 
-** TODO Implement a parser for the WHO web page.
-** TODO Implement the =atcData= object/class.
+** DONE Implement a parser for the WHO web page.
+   CLOSED: [2016-02-17 Wed 08:42]
+   - State "DONE"       from "TODO"       [2016-02-17 Wed 08:42]
+** DONE Implement the =atcData= object/class.
+   CLOSED: [2016-02-17 Wed 08:42]
+   - State "DONE"       from "TODO"       [2016-02-17 Wed 08:42]
 ** TODO Implement all required methods [/]
+** DONE Adapt the database to the /new/ style.
+   CLOSED: [2016-02-17 Wed 08:41]
+   - State "DONE"       from "TODO"       [2016-02-17 Wed 08:41]
+** TODO Update the =crunchWHOCC= function to fetch only codes with level >= currentlevel
 
+Compare the results to the /old/ result.
 
 * References

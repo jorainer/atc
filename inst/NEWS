@@ -1,3 +1,15 @@
+CHANGES IN VERSION 0.1.0
+------------------------
+
+NEW FEATURES
+    o ATC database can be generated from data crunched from the official WHOCC
+      web page.
+
+SIGNIFICANT USER VISIBLE CHANGES
+    o Database layout changed to support only a single language.
+    o Two databases provided. The ATC from WIDO and the official from WHOCC.
+
+
 CHANGES IN VERSION 0.0.1
 ------------------------
 

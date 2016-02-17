@@ -2,6 +2,8 @@
 #+AUTHOR: Johannes Rainer
 #+email: johannes.rainer@eurac.edu
 
+[[https://travis-ci.org/jotsetung/atc][https://travis-ci.org/jotsetung/atc.svg?branch=master]]
+[[https://codecov.io/github/jotsetung/atc?branch=master][https://codecov.io/github/jotsetung/mirtarbase/atc.svg?branch=master]]
 
 * =atc=: data package providing ATC codes
 
