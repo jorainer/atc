@@ -1,2 +1,3 @@
 atc_raw_files/*
 .git
+.travis.yml

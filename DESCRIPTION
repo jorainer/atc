@@ -4,7 +4,7 @@ Title: Data package providing ATC codes
 Version: 0.1.0
 Author: J. Rainer
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
-Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML
+Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML, ensembldb
 Depends: methods
 Suggests: BiocStyle, knitr, RUnit, rmarkdown
 VignetteBuilder: knitr

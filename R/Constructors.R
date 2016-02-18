@@ -7,15 +7,9 @@ AtcDb <- function(x){
     }
     lite <- dbDriver("SQLite")
     con <- dbConnect(lite, dbname = x, flags=SQLITE_RO)
-    Tables <- dbListTables(con)
-    theTables <- vector("list", length(Tables))
-    for(i in 1:length(Tables)){
-        theTables[[i]] <- colnames(dbGetQuery(con, paste0("select * from ",
-                                                          Tables[i],
-                                                          " limit 1;")))
-    }
-    names(theTables) <- Tables
-    atc <- new("AtcDb", atcdb=con, tables=theTables)
+    atc <- new("AtcDb", atcdb=con)
+    theTables <- .doListTables(atc)
+    atc@tables <- theTables
     return(atc)
 }
 

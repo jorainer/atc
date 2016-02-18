@@ -27,19 +27,10 @@ vignette: >
   %\VignetteDepends{atc}
   %\VignettePackage{atc}
   %\VignetteKeywords{AnnotationData,Homo_sapiens}
-bibliography: references.bib
-csl: biomed-central.csl
-references:
-- id: dummy
-  title: no title
-  author:
-  - family: noname
-    given: noname
 ---
 
-**Package**: `r Biocpkg("atc")`<br />
 **Authors**: `r packageDescription("atc")$Author`<br />
-**Modified**: 10 February, 2016<br />
+**Modified**: 18 February, 2016<br />
 **Compiled**: `r date()`
 
 #+END_HTML
@@ -76,19 +67,20 @@ e.g. =:ravel results='hide'=. Other options for knitr style options are:
 
 * Introduction
 
-This package provides the Anatomical Therapeutical Chemical (ATC) Classification data
-and functions that facilitate working with these. The ATC data is defined by the
-WHO Collaborating Centre for Drug Statistics Methodology (Oslo, Norway), which
-holds also the copyright for the data and dos not allow distribution for
-commercial purposes.
+This package provides the Anatomical Therapeutical Chemical (ATC) Classification
+data and functions that facilitate working with these. The ATC data is defined
+by the WHO Collaborating Centre (WHOCC) for Drug Statistics Methodology (Oslo,
+Norway), which holds also the copyright for the data and dos not allow
+distribution for commercial purposes.
 
-The data set provided within this package has been compiled manually from data
-files from the /Wissenschaftliches Institut der AOK/ (http://www.wido.de), and
-from the online resources http://atccodes.com and Wikipedia.
-
-In future it would be better to fetch the data directly from the official web
-site http://www.whocc.no/, but this would have to be queried and parsed in an
-automated fashion.
+This packages provides two ATC databases, bound to the variables =atc= and
+=atc_wido=.  The =AtcDb= object bound to the =atc= variable access a database
+containing the /official/ ATC data from the WHOCC web page. The =AtcDb= object
+bound to =atc_wido= provides access to a database that was compiled manually
+from data files from the /Wissenschaftliches Institut der AOK/
+(http://www.wido.de), and from the online resources http://atccodes.com and
+Wikipedia. The two databases might differ partially in their content (e.g. the
+=atc_wido= contains also homeopathic compounds).
 
 The ATC Classification system is used for the classification of active
 ingredients of drugs according to the organ or system on which they act and
@@ -112,6 +104,69 @@ drugs are classified into groups at 5 different levels:
 
 Note that national versions of the ATC classification exist with eventual
 additional codes and ddds.
+
+* Basic usage
+
+The data structure of the database is very simple, and it is thus straight
+forward to retrieve data from it.
+
+The =columns= or the =listTables= methods can be used to get some information of
+the available values (see Database layout section below for a more detailed
+description of the individual columns).
+
+#+BEGIN_SRC R
+  library(atc)
+
+  ## First of all print some basic information
+  atc
+
+  ## What tables are available?
+  listTables(atc)
+
+  ## All available columns.
+  columns(atc)
+#+END_SRC
+
+The =keys= method can be used to retrieve the ATC codes in the database, with
+the additional argument =level= we can restrict to ATC codes from a certain
+level or levels.
+
+#+BEGIN_SRC R
+  ## All ATC codes
+  head(keys(atc))
+
+  ## Only ATC codes from level 1 and 3
+  head(keys(atc, level=c(1, 3)))
+#+END_SRC
+
+The =atcData= method can be used to extract additional information from the
+database.
+
+#+BEGIN_SRC R
+  ## Get the full data
+  head(atcData(atc))
+
+  ## To retrive the full data we could also use the as.data.frame method
+  head(as.data.frame(atc))
+#+END_SRC
+
+The arguments =key=, =level= and =pattern= can be used to restrict the results
+to certain entries. Below we extract all elements from the database that contain
+in the name the word =sodium=. The pattern search is performed case insensitive
+and also partial matches are returned.
+
+#+BEGIN_SRC R
+  Sod <- atcData(atc, pattern="sodium")
+
+  nrow(Sod)
+
+  ## From what level are the retrieved ATC codes?
+  table(Sod$level)
+
+  ## Extract the ATC data up to level 4 containing "sodium" in their name.
+  atcData(atc, pattern="sodium", level=1:4)
+#+END_SRC
+
 
 
 * Extract ATC codes from the official WHOCC web page
@@ -291,4 +346,3 @@ the individual tables are listed below.
 
 Compare the results to the /old/ result.
 
-* References

@@ -8,8 +8,10 @@
 \alias{keys,AtcDb-method}
 \alias{as.data.frame,AtcDb-method}
 \alias{atcData}
+\alias{listTables,AtcDb-method}
 \alias{atcData,AtcDb-method}
 \alias{columns}
+\alias{columns,AtcDb-method}
 
 \title{Anatomical Therapeutic Chemical Data}
 
@@ -62,9 +64,7 @@
 }
 \usage{
 
-(in alphabetic order)
-
-\S4method{as.data.frame}{AtcDb}(x, ...)
+\S4method{as.data.frame}{AtcDb}(x, row.names=NULL, optional=FALSE, ...)
 
 \S4method{atcData}{AtcDb}(x, columns, key, level, pattern)
 
@@ -72,7 +72,7 @@
 
 \S4method{dbconn}{AtcDb}(x)
 
-\S4method{keys}{Props}(x, level, ...)
+\S4method{keys}{AtcDb}(x, level, ...)
 
 }
 \arguments{
@@ -95,10 +95,18 @@
     should be retrieved from the database.
   }
 
+  \item{optional}{
+    For \code{as.data.frame}: not used.
+  }
+
   \item{pattern}{
     A character vector of possible key words that are searched in the
     ATC names attribute. Note that a case insensitive pattern matching
     is performed on this keyword (or keywords).
+  }
+
+  \item{row.names}{
+    For \code{as.data.frame}: not used.
   }
 
   \item{x}{
@@ -131,18 +139,19 @@
 }
 
 \details{
-  The columns of the database are:
+  For details on the database tables and the columns please refer to the
+  Vignette. Note that the defined daily dose (\emph{ddd}) is only
+  available for level 5 codes, and that each of these can have several
+  different ddds.
+
+  The \emph{main} columns are:
   \describe{
 
     \item{key}{
       The ATC code of the entry.
     }
 
-    \item{name_de}{
-      The german name of the entry.
-    }
-
-    \item{name_en}{
+    \item{name}{
       The english name of the entry.
     }
 
@@ -153,6 +162,18 @@
     \item{ddd}{
       (Only for level 5 entries): the defined daily doses. This may not
       be defined for all drugs.
+    }
+
+    \item{unit}{
+      The unit of the dose in \emph{ddd}.
+    }
+
+    \item{administration_route}{
+      The route of administration for the drug.
+    }
+
+    \item{note}{
+      Eventual additional information related to the ddd.
     }
   }
 }
@@ -192,6 +213,10 @@
       \code{level}.
     }
 
+    \item{listTables}{
+      Returns a \code{list} of column names in each table. The names of
+      the list correspond to the table names.
+    }
   }
 }
 
@@ -213,6 +238,9 @@ atc
 
 ## List all columns in the database.
 columns(atc)
+
+## List tables and columns.
+listTables(atc)
 
 ## Extract the full data as data.frame.
 tmp <- as.data.frame(atc)

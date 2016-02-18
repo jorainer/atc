@@ -8,6 +8,8 @@ NEW FEATURES
 SIGNIFICANT USER VISIBLE CHANGES
     o Database layout changed to support only a single language.
     o Two databases provided. The ATC from WIDO and the official from WHOCC.
+    o Vignette added.
+    o Added and completed the documentation.
 
 
 CHANGES IN VERSION 0.0.1

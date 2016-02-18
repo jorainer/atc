@@ -8,7 +8,14 @@ setMethod("show", "AtcDb", function(object){
     metad <- dbGetQuery(dbconn(object), "select * from metadata;")
     cat("| metadata: \n")
     for(i in 1:nrow(metad)){
-        cat("| o ", metad[i, "name"], ": ", metad[i, "value"],"\n")
+        cat("| o", metad[i, "name"], ": ", metad[i, "value"],"\n")
+    }
+    cat("| data summary:\n")
+    res <- dbGetQuery(dbconn(object), "select * from atc;")
+    Tab <- table(res$level)
+    for(i in 1:length(Tab)){
+        cat("| o level", i, ":", as.numeric(Tab[as.character(i)]),
+            "entries\n")
     }
 })
 
@@ -29,18 +36,10 @@ setMethod("dbconn", "AtcDb", function(x){
 ####------------------------------------------------------------
 setMethod("keys", "AtcDb", function(x, level, ...){
     wQuery <- .levelConditionQuery(level)
-    res <- dbGetQuery(dbconn(x), paste0("select key from atc ", wQuery, " order by key;"))
-    return(res[, "key"])
-})
-
-####============================================================
-##  keys
-##
-##  returns all ATC codes stored in the database.
-####------------------------------------------------------------
-setMethod("keys", "AtcDb", function(x, level, ...){
-    wQuery <- .levelConditionQuery(level)
-    res <- dbGetQuery(dbconn(x), paste0("select key from atc", wQuery, " order by key;"))
+    if(length(wQuery) > 0)
+        wQuery <- paste0("where ", wQuery)
+    Q <- paste0("select key from atc ", wQuery, " order by key;")
+    res <- dbGetQuery(dbconn(x), Q)
     return(res[, "key"])
 })
 
@@ -50,8 +49,34 @@ setMethod("keys", "AtcDb", function(x, level, ...){
 ##  returns all columns available  in the database.
 ####------------------------------------------------------------
 setMethod("columns", "AtcDb", function(x){
-    return(unique(sort(unlist(x@tables, use.names=FALSE))))
+    Tabs <- listTables(x)
+    return(unique(sort(unlist(Tabs[names(Tabs) != "metadata"], use.names=FALSE))))
 })
+
+####============================================================
+##  listTables
+##
+##  lists the database tables
+####------------------------------------------------------------
+setMethod("listTables", "AtcDb", function(x, ...){
+    if(length(x@tables) > 0)
+        return(x@tables)
+    ## Else: query:
+    return(.doListTables)
+})
+.doListTables <- function(x){
+    con <- x@atcdb
+    Tables <- dbListTables(con)
+    theTables <- vector("list", length(Tables))
+    for(i in 1:length(Tables)){
+        theTables[[i]] <- colnames(dbGetQuery(con,
+                                              paste0("select * from ",
+                                                     Tables[i],
+                                                     " limit 1;")))
+    }
+    names(theTables) <- Tables
+    return(theTables)
+}
 
 ####============================================================
 ##  as.data.frame
@@ -110,6 +135,12 @@ setMethod("atcData", "AtcDb", function(x, columns, key, level, pattern){
 ####------------------------------------------------------------
 
 
+####============================================================
+##  parents
+##
+##  Get all less specific ATC codes for the specified ATC. Returns
+##  always a list
+####------------------------------------------------------------
 
 
 
@@ -190,7 +221,7 @@ setMethod("atcData", "AtcDb", function(x, columns, key, level, pattern){
 ##  been "sanitized" for the database table (i.e. <table>.<column>).
 ####------------------------------------------------------------
 .checkColumns <- function(x, columns=NULL){
-    haveTables <- x@tables
+    haveTables <- listTables(x)
     tableDf <- cbind(table=rep(names(haveTables), unlist(lapply(haveTables, length))),
                      column=unlist(haveTables, use.names=FALSE))
     ## Exclude the metadata table. Eventually we would need to re-order the df...

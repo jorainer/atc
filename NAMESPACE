@@ -6,6 +6,7 @@ import(RSQLite)
 import(XML)
 importMethodsFrom(AnnotationDbi, dbconn, columns, keytypes, keys,
                   select, mapIds)
+importMethodsFrom(ensembldb, listTables)
 ## importClassesFrom(AnnotationHub, AnnotationHub)
 ## importMethodsFrom(AnnotationHub, query, mcols)
 
@@ -13,5 +14,6 @@ importMethodsFrom(AnnotationDbi, dbconn, columns, keytypes, keys,
 export(AtcDb, crunchWHOCC)
 ## Export classes
 exportClasses("AtcDb")
-exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns")
+exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns",
+              "listTables")
 
