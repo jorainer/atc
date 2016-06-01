@@ -8,7 +8,10 @@
 \alias{keys,AtcDb-method}
 \alias{as.data.frame,AtcDb-method}
 \alias{atcData}
+\alias{atcs}
+\alias{atcs,AtcDb-method}
 \alias{listTables,AtcDb-method}
+\alias{listColumns,AtcDb-method}
 \alias{atcData,AtcDb-method}
 \alias{columns}
 \alias{columns,AtcDb-method}
@@ -66,13 +69,20 @@
 
 \S4method{as.data.frame}{AtcDb}(x, row.names=NULL, optional=FALSE, ...)
 
-\S4method{atcData}{AtcDb}(x, columns, key, level, pattern)
+%\S4method{atcData}{AtcDb}(x, columns, key, level, pattern)
+
+\S4method{atcs}{AtcDb}(x, columns=listColumns(x), filter=list(),
+order.by="key", ...)
 
 \S4method{columns}{AtcDb}(x)
 
 \S4method{dbconn}{AtcDb}(x)
 
 \S4method{keys}{AtcDb}(x, level, ...)
+
+\S4method{listColumns}{AtcDb}(x)
+
+\S4method{listTables}{AtcDb}(x, ...)
 
 }
 \arguments{
@@ -81,8 +91,14 @@
 
   \item{columns}{
     A character vector specifying the columns that should be
-    returned. Use the \code{columns} method to list all allowed column
-    names.
+    returned. Use the \code{columns} or \code{listColumns} method to
+    list all allowed column names.
+  }
+
+  \item{filter}{
+    Either a single filter object or a \code{list} of filter object to
+    filter the results retrieved from the database. See
+    \code{\link{KeyFilter}} for a list of supported filters.
   }
 
   \item{key}{
@@ -99,11 +115,15 @@
     For \code{as.data.frame}: not used.
   }
 
-  \item{pattern}{
-    A character vector of possible key words that are searched in the
-    ATC names attribute. Note that a case insensitive pattern matching
-    is performed on this keyword (or keywords).
+  \item{order.by}{
+    For \code{atcs}: the column by which the results should be ordered.
   }
+
+  %% \item{pattern}{
+  %%   A character vector of possible key words that are searched in the
+  %%   ATC names attribute. Note that a case insensitive pattern matching
+  %%   is performed on this keyword (or keywords).
+  %% }
 
   \item{row.names}{
     For \code{as.data.frame}: not used.
@@ -189,6 +209,9 @@
     }
 
     \item{atcData}{
+      This method is deprecated; please use \code{atcs} instead which
+      provides much more flexibility.
+
       Retrieve data from the database. This method allows to query
       either the full data from the database (if called without
       additional arguments) or allows to search and retrieve specific
@@ -198,8 +221,14 @@
       by the argument \code{columns} or (by default) all columns.
     }
 
+    \item{atcs}{
+      Retrieve data from the database. Arguments \code{columns} and
+      \code{filter} allow to specify which columns and entries should be
+      fetched from the database.
+    }
+
     \item{columns}{
-      Retruns a character vector with the column names of the database
+      Returns a character vector with the column names of the database
       tables.
     }
 
@@ -250,13 +279,21 @@ head(tmp)
 keys(atc, level=1)
 
 ## Get all data for ATC codes of level 1
-atcData(atc, level=1)
+atcs(atc, filter=LevelFilter(1))
+##atcData(atc, level=1)
 
 ## Get all data for ATC codes of level 2:4
-tmp <- atcData(atc, level=2:4)
+## tmp <- atcData(atc, level=2:4)
+atcs(atc, filter=LevelFilter(2:4))
 
 ## Get all data containing "cardio" or "kidney" in the name
-atcData(atc, pattern=c("cardio", "renal"), level=1:3)
+##atcData(atc, pattern=c("cardio", "renal"), level=1:3)
+
+
+## Use filters instead.
+atcs(atc, filter=LevelFilter(1:3))
+
+## See the vignette for more examples.
 
 
 }

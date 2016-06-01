@@ -16,7 +16,7 @@ vignette: >
 ---
 
 **Authors**: `r packageDescription("atc")$Author`<br />
-**Modified**: 18 February, 2016<br />
+**Modified**: 31 May, 2016<br />
 **Compiled**: `r date()`
 
 # Introduction
@@ -64,9 +64,9 @@ additional codes and ddds.
 The data structure of the database is very simple, and it is thus straight
 forward to retrieve data from it.
 
-The `columns` or the `listTables` methods can be used to get some information of
-the available values (see Database layout section below for a more detailed
-description of the individual columns).
+The `columns` (or `listColumns`) or the `listTables` methods can be used to get some
+information of the available values (see Database layout section below for a
+more detailed description of the individual columns).
 
 ```{r }
 library(atc)
@@ -78,7 +78,7 @@ atc
 listTables(atc)
 
 ## All available columns.
-columns(atc)
+listColumns(atc)
 ```
 
 The `keys` method can be used to retrieve the ATC codes in the database, with
@@ -93,32 +93,46 @@ head(keys(atc))
 head(keys(atc, level=c(1, 3)))
 ```
 
-The `atcData` method can be used to extract additional information from the
-database.
+The `atcs` method can be used to extract additional information from the database.
 
 ```{r }
 ## Get the full data
-head(atcData(atc))
+head(atcs(atc))
 
 ## To retrive the full data we could also use the as.data.frame method
 head(as.data.frame(atc))
 ```
 
-The arguments `key`, `level` and `pattern` can be used to restrict the results
-to certain entries. Below we extract all elements from the database that contain
-in the name the word `sodium`. The pattern search is performed case insensitive
-and also partial matches are returned.
+The arguments `columns` and `filters` allow to define which columns respectively
+entries (rows) should be retrieved from the database. The `atc` package implements
+the same filtering framework than Bioconductor's `ensembldb` package, i.e. a
+single or a `list` of filter objects can be passed to the `atcs` method to query for
+specific entries.
+
+The filters that are presently supported by the `atc` package are:
+
+-   `AdminrouteFilter`: filter results based on the *administration route* (e.g. `O` for
+    *oral*).
+-   `KeyFilter`: filter results using their key values.
+-   `LevelFilter`: filter results based on the ATC level.
+-   `NameFilter`: filter results based on the entries' names.
+
+In the code example below we simply query the database to get
+all level 1 entries from the database.
 
 ```{r }
-Sod <- atcData(atc, pattern="sodium")
+## Get all level 1 entries and restrict to some columns
+atcs(atc, filter=LevelFilter(1), columns=c("key", "name", "level"))
+```
 
-nrow(Sod)
+In the example below we combine filters to retrieve all orally taken
+glucocorticoids.
 
-## From what level are the retrieved ATC codes?
-table(Sod$level)
-
-## Extract the ATC data up to level 4 containing "sodium" in their name.
-atcData(atc, pattern="sodium", level=1:4)
+```{r }
+## Use a KeyFilter to search for all entries that start with H02AB
+## and combine that with administration route being 'O'
+atcs(atc, filter=list(KeyFilter("H02AB%", condition="like"),
+		      AdminrouteFilter("O")))
 ```
 
 # Extract ATC codes from the official WHOCC web page
@@ -166,9 +180,12 @@ the individual tables are listed below.
 
 -   **atc**: the *main* table providing the mapping between the ATC codes (also
     called keys) and their names.
-    -   `key`: column containing the ATC codes.
-    -   `name`: column with the name associated with the key.
-    -   `level`: the level of the ATC code (from 1 to 5).
+    -   `key`: column containing the ATC codes. The `KeyFilter` can be used to filter on
+        this column.
+    -   `name`: column with the name associated with the key. The `NameFilter` can be
+        used to filter on this column.
+    -   `level`: the level of the ATC code (from 1 to 5). The `LevelFilter` can be used
+        to filter on this column.
 
 -   **ddd**: the table providing the *defined daily dosage* (ddd) for the ATC
     entries of level 5. Thus, this table contains only values for codes of level
@@ -177,7 +194,8 @@ the individual tables are listed below.
     -   `key`: the ATC code.
     -   `ddd`: the defined daily dose.
     -   `unit`: the unit of the dose.
-    -   `administration_route`: the route of administration of the drug.
+    -   `administration_route`: the route of administration of the drug. The
+        `AdminrouteFilter` can be used to filter on this column.
     -   `note`: optional additional information.
 
 -   **metadata**: table providing additional information (creation time, source

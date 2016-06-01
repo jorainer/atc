@@ -1,3 +1,14 @@
+CHANGES IN VERSION 0.1.1
+------------------------
+NEW FEATURES
+    o New KeyFilter, NameFilter and LevelFilter, AdminrouteFilter classes to
+      enable ensembldb-like queries.
+    o atcs method to retrieve data.
+
+SIGNIFICANT USER VISIBLE CHANGES
+    o atcData is now deprecated; use atcs instead.
+
+
 CHANGES IN VERSION 0.1.0
 ------------------------
 

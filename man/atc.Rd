@@ -24,7 +24,7 @@
 Johannes Rainer
 }
 \seealso{
-  \code{\link{atcData}}, \code{\link{as.data.frame}},
+  \code{\link{atcs}}, \code{\link{as.data.frame}},
   \code{\link{keys}}
 }
 \examples{
@@ -33,7 +33,8 @@ Johannes Rainer
 atc
 
 ## Get all ATC codes of level 1
-atcData(atc, level=1)
+## atcData(atc, level=1)
+atcs(atc, filter=LevelFilter(1))
 
 }
 \keyword{ data }

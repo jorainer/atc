@@ -26,32 +26,32 @@ test_Atc <- function(){
     checkException(keys(atc, level=9))
 }
 
-test_atcData <- function(){
-    ## Get everything.
-    Test <- atcData(atc)
-    df <- as.data.frame(atc)
-    checkEquals(Test, df)
+## test_atcData <- function(){
+##     ## Get everything.
+##     Test <- atcData(atc)
+##     df <- as.data.frame(atc)
+##     checkEquals(Test, df)
 
-    ## Check some more stuff, selected entries etc.
-    l1 <- atcData(atc, level=1)
-    dfsub <- df[df$level == 1, ]
-    rownames(dfsub) <- NULL
-    checkEquals(l1, dfsub)
-    l2 <- atcData(atc, level=2:4)
-    dfsub <- df[df$level %in% 2:4, ]
-    rownames(dfsub) <- NULL
-    checkEquals(l2, dfsub)
-    Test <- atcData(atc, level=2:4, key=c("A01"))
-    dfsub <- df[df$key == "A01" & df$level %in% 2:4, ]
-    rownames(dfsub) <- NULL
-    checkEquals(Test, dfsub)
-    ## Now with some pattern matches...
-    idxen <- grep(df$name, pattern="cardio", ignore.case=TRUE)
-    dfsub <- df[idxen, ]
-    rownames(dfsub) <- NULL
-    Test <- atcData(atc, pattern="cardio")
-    checkEquals(Test, dfsub)
-}
+##     ## Check some more stuff, selected entries etc.
+##     l1 <- atcData(atc, level=1)
+##     dfsub <- df[df$level == 1, ]
+##     rownames(dfsub) <- NULL
+##     checkEquals(l1, dfsub)
+##     l2 <- atcData(atc, level=2:4)
+##     dfsub <- df[df$level %in% 2:4, ]
+##     rownames(dfsub) <- NULL
+##     checkEquals(l2, dfsub)
+##     Test <- atcData(atc, level=2:4, key=c("A01"))
+##     dfsub <- df[df$key == "A01" & df$level %in% 2:4, ]
+##     rownames(dfsub) <- NULL
+##     checkEquals(Test, dfsub)
+##     ## Now with some pattern matches...
+##     idxen <- grep(df$name, pattern="cardio", ignore.case=TRUE)
+##     dfsub <- df[idxen, ]
+##     rownames(dfsub) <- NULL
+##     Test <- atcData(atc, pattern="cardio")
+##     checkEquals(Test, dfsub)
+## }
 
 
 
