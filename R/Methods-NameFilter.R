@@ -30,7 +30,7 @@ setMethod("where",
                     with.tables="missing"),
           function(object, db, with.tables, ...){
               ## without a database we're just calling the where of BasicFilter
-              return(callNextMethod())
+              .where(object)
           }
           )
 setMethod("where",

@@ -3,43 +3,18 @@
 \docType{class}
 \alias{NameFilter-class}
 \alias{NameFilter}
-\alias{column,NameFilter,missing,missing-method}
-\alias{column,NameFilter,AtcDb,missing-method}
-\alias{column,NameFilter,AtcDb,character-method}
-\alias{where,NameFilter,missing,missing-method}
-\alias{where,NameFilter,AtcDb,missing-method}
-\alias{where,NameFilter,AtcDb,character-method}
 
 %% LevelFilter
 \alias{LevelFilter-class}
 \alias{LevelFilter}
-\alias{column,LevelFilter,missing,missing-method}
-\alias{column,LevelFilter,AtcDb,missing-method}
-\alias{column,LevelFilter,AtcDb,character-method}
-\alias{where,LevelFilter,missing,missing-method}
-\alias{where,LevelFilter,AtcDb,missing-method}
-\alias{where,LevelFilter,AtcDb,character-method}
 
 %% KeyFilter
 \alias{KeyFilter-class}
 \alias{KeyFilter}
-\alias{column,KeyFilter,missing,missing-method}
-\alias{column,KeyFilter,AtcDb,missing-method}
-\alias{column,KeyFilter,AtcDb,character-method}
-\alias{where,KeyFilter,missing,missing-method}
-\alias{where,KeyFilter,AtcDb,missing-method}
-\alias{where,KeyFilter,AtcDb,character-method}
 
 %% AdminrouteFilter
 \alias{AdminrouteFilter-class}
 \alias{AdminrouteFilter}
-\alias{column,AdminrouteFilter,missing,missing-method}
-\alias{column,AdminrouteFilter,AtcDb,missing-method}
-\alias{column,AdminrouteFilter,AtcDb,character-method}
-\alias{where,AdminrouteFilter,missing,missing-method}
-\alias{where,AdminrouteFilter,AtcDb,missing-method}
-\alias{where,AdminrouteFilter,AtcDb,character-method}
-
 
 \title{Filter framework for the ATC database}
 
@@ -84,14 +59,10 @@
 }
 \usage{
 
-AdminrouteFilter(value, condition="=")
-KeyFilter(value, condition="=")
-LevelFilter(value, condition="=")
-NameFilter(value, condition="=")
-
-\S4method{column}{KeyFilter,AtcDb,character}(object, db, with.tables, ...)
-
-\S4method{where}{KeyFilter,AtcDb,character}(object, db, with.tables, ...)
+AdminrouteFilter(value, condition="==")
+KeyFilter(value, condition="==")
+LevelFilter(value, condition="==")
+NameFilter(value, condition="==")
 
 }
 \arguments{
@@ -133,17 +104,11 @@ NameFilter(value, condition="=")
 \section{Methods}{
 
   All classes inherit all methods from the
-  \code{\link[ensembldb]{GeneidFilter}} class. Also, the methods listed
-  below will in most cases not be called directly by the user.
+  \code{\link[AnnotationFilter]{AnnotationFilter}} class.
 
   (in alphabetic order)
 
   \describe{
-    \item{column}{
-      Get the name of the database column that will be used by the
-      filter.
-      Returns a character of length 1.
-    }
 
     \item{AdminrouteFilter}{
       Creates and returns a new \code{AdminrouteFilter} instance.
@@ -161,10 +126,6 @@ NameFilter(value, condition="=")
       Creates and returns a new \code{NameFilter} instance.
     }
 
-    \item{where}{
-      Get the \emph{where} condition of the filter for the SQL query.
-      Returns a character of length 1.
-    }
   }
 }
 
@@ -179,12 +140,11 @@ NameFilter(value, condition="=")
 
 ## Create a simple KeyFilter
 kf <- KeyFilter("R07")
+kf
 
-## Get the database column that will be used by the filter in the ATC DB.
-column(kf, atc)
-
-## Get the corresponding where-condition
-where(kf, atc)
+## Define a filter for all keys starting with R07
+kf <- KeyFilter("R07", condition = "startsWith")
+kf
 
 }
 \keyword{classes}

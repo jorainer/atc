@@ -1,11 +1,11 @@
 Package: atc
 Type: Package
 Title: Data package providing ATC codes
-Version: 0.1.1
+Version: 0.2.0
 Author: J. Rainer
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
-Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML, ensembldb
-Depends: methods
+Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML
+Depends: methods, AnnotationFilter
 Suggests: BiocStyle, knitr, RUnit, rmarkdown, testthat
 VignetteBuilder: knitr
 Description: Data package providing the Anatomical Therapeutic Chemical Classification

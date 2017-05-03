@@ -23,6 +23,7 @@ test_cleanColumns <- function(){
 
 test_sortTablesByDegree <- function(){
     Res <- atc:::sortTablesByDegree(atc)
+    checkEquals(Res, c("atc", "ddd", "metadata"))
 }
 
 test_buildFilterQuery <- function(){

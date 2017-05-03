@@ -6,11 +6,17 @@
 setGeneric("atcData", function(x, columns, key, level, pattern)
     standardGeneric("atcData"))
 
-## if(!isGeneric("listTables")){
-##     setGeneric("listTables", function(x, ...)
-##         standardGeneric("listTables"))
-## }
+if(!isGeneric("listTables"))
+    setGeneric("listTables", function(x, ...)
+        standardGeneric("listTables"))
+setGeneric("column", function(object, db, with.tables, ...)
+    standardGeneric("column"))
+setGeneric("where", function(object, db, with.tables, ...)
+    standardGeneric("where"))
 
+if (!isGeneric("listColumns"))
+    setGeneric("listColumns", function(x, ...)
+        standardGeneric("listColumns"))
 
 
 setGeneric("cleanColumns", function(x, columns, ...)

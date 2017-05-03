@@ -1,11 +1,11 @@
 
 test_NameFilter_constructor <- function(){
     nf <- NameFilter("sodium fluoride")
-    checkEquals(where(nf), "= 'sodium fluoride'")
-    checkEquals(where(nf, atc), "atc.name = 'sodium fluoride'")
+    checkEquals(atc:::where(nf), "= 'sodium fluoride'")
+    checkEquals(atc:::where(nf, atc), "atc.name = 'sodium fluoride'")
 
-    checkEquals(column(nf), "name")
-    checkEquals(column(nf, atc), "atc.name")
+    checkEquals(atc:::column(nf), "name")
+    checkEquals(atc:::column(nf, atc), "atc.name")
 }
 
 test_NameFilterQuery <- function(){
@@ -13,7 +13,9 @@ test_NameFilterQuery <- function(){
     res <- atcs(atc, filter=nf)
     checkEquals(res$key, c("A01AA01", "A12CD01"))
 
-    nf <- NameFilter("%respiratory%", condition="like")
+    ## nf <- NameFilter("%respiratory%", condition="like")
+    ## res <- atcs(atc, filter=nf)
+    nf <- NameFilter("resp", condition="startsWith")
     res <- atcs(atc, filter=nf)
 }
 

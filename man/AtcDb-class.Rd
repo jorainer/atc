@@ -71,7 +71,7 @@
 
 %\S4method{atcData}{AtcDb}(x, columns, key, level, pattern)
 
-\S4method{atcs}{AtcDb}(x, columns=listColumns(x), filter=list(),
+\S4method{atcs}{AtcDb}(x, columns=listColumns(x), filter=AnnotationFilterList(),
 order.by="key", ...)
 
 \S4method{columns}{AtcDb}(x)

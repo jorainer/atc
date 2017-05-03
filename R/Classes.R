@@ -14,120 +14,134 @@ setClass("AtcDb",
 ##  KeyFilter
 ##
 setClass("KeyFilter",
-         contains="BasicFilter",
+         contains="CharacterFilter",
          prototype=list(
-             condition="=",
+             condition="==",
              value="",
-             .valueIsCharacter=TRUE
+             field = "key"
          ))
-KeyFilter <- function(value, condition="="){
+KeyFilter <- function(value, condition="=="){
     if(missing(value))
         stop("Missing argument 'value'.")
-    if(length(value) > 1){
-        if(condition != "in" | condition != "not in"){
-            if(condition == "="){
-                condition <- "in"
-            }else{
-                if(condition == "!="){
-                    condition <- "not in"
-                }else{
-                    stop("For length of 'value' > 1, condition has to be '=', '!=',",
-                         " 'in' or 'not in'.")
-                }
-            }
-        }
-    }
-    return(new("KeyFilter", condition=condition, value=as.character(value)))
+    ## if(length(value) > 1){
+    ##     if(condition != "in" | condition != "not in"){
+    ##         if(condition == "=="){
+    ##             condition <- "in"
+    ##         }else{
+    ##             if(condition == "!="){
+    ##                 condition <- "not in"
+    ##             }else{
+    ##                 stop("For length of 'value' > 1, condition has to be '==', '!=',",
+    ##                      " 'in' or 'not in'.")
+    ##             }
+    ##         }
+    ##     }
+    ## }
+    ## return(new("KeyFilter", condition = condition, value = as.character(value)))
+    res <- new("KeyFilter", condition = condition, value = as.character(value))
+    if (validObject(res))
+        res
 }
 
 ####============================================================
 ##  NameFilter
 ##
 setClass("NameFilter",
-         contains="BasicFilter",
+         contains="CharacterFilter",
          prototype=list(
-             condition="=",
-             value="",
-             .valueIsCharacter=TRUE
+             condition = "==",
+             value = "",
+             field = "name"
          ))
-NameFilter <- function(value, condition="="){
+NameFilter <- function(value, condition = "=="){
     if(missing(value))
         stop("Missing argument 'value'.")
-    if(length(value) > 1){
-        if(condition != "in" | condition != "not in"){
-            if(condition == "="){
-                condition <- "in"
-            }else{
-                if(condition == "!="){
-                    condition <- "not in"
-                }else{
-                    stop("For length of 'value' > 1, condition has to be '=', '!=',",
-                         " 'in' or 'not in'.")
-                }
-            }
-        }
-    }
-    return(new("NameFilter", condition=condition, value=as.character(value)))
+    ## if(length(value) > 1){
+    ##     if(condition != "in" | condition != "not in"){
+    ##         if(condition == "=="){
+    ##             condition <- "in"
+    ##         }else{
+    ##             if(condition == "!="){
+    ##                 condition <- "not in"
+    ##             }else{
+    ##                 stop("For length of 'value' > 1, condition has to be '==', '!=',",
+    ##                      " 'in' or 'not in'.")
+    ##             }
+    ##         }
+    ##     }
+    ## }
+    ## return(new("NameFilter", condition=condition, value=as.character(value)))
+    res <- new("NameFilter", condition = condition, value = as.character(value))
+    if (validObject(res))
+        res
 }
 
 ####============================================================
 ##  LevelFilter
 ##
 setClass("LevelFilter",
-         contains="BasicFilter",
+         contains="IntegerFilter",
          prototype=list(
-             condition="=",
-             value="",
-             .valueIsCharacter=FALSE
+             condition = "==",
+             value = integer(),
+             field = "level"
          ))
-LevelFilter <- function(value, condition="="){
+LevelFilter <- function(value, condition = "=="){
     if(missing(value))
         stop("Missing argument 'value'.")
-    if(!is.numeric(value))
-        stop("'value' has to be numeric!")
-    if(length(value) > 1){
-        if((condition != "in") | (condition != "not in")){
-            if(condition == "="){
-                condition <- "in"
-            }else{
-                if(condition == "!="){
-                    condition <- "not in"
-                }else{
-                    stop("For length of 'value' > 1, condition has to be '=', '!=',",
-                         " 'in' or 'not in'.")
-                }
-            }
-        }
-    }
-    return(new("LevelFilter", condition=condition, value=as.character(value)))
+    ## if(!is.numeric(value))
+    ##     stop("'value' has to be numeric!")
+    ## if(length(value) > 1){
+    ##     if((condition != "in") | (condition != "not in")){
+    ##         if(condition == "=="){
+    ##             condition <- "in"
+    ##         }else{
+    ##             if(condition == "!="){
+    ##                 condition <- "not in"
+    ##             }else{
+    ##                 stop("For length of 'value' > 1, condition has to be '==', '!=',",
+    ##                      " 'in' or 'not in'.")
+    ##             }
+    ##         }
+    ##     }
+    ## }
+    ## return(new("LevelFilter", condition = condition, value=as.integer(value)))
+    res <- new("LevelFilter", condition = condition, value = as.integer(value))
+    if (validObject(res))
+        res
 }
 
 ####============================================================
 ##  AdminrouteFilter
 ##
 setClass("AdminrouteFilter",
-         contains="BasicFilter",
+         contains="CharacterFilter",
          prototype=list(
-             condition="=",
-             value="",
-             .valueIsCharacter=TRUE
+             condition = "==",
+             value = "",
+             field = "adminroute"
          ))
-AdminrouteFilter <- function(value, condition="="){
+AdminrouteFilter <- function(value, condition = "=="){
     if(missing(value))
         stop("Missing argument 'value'.")
-    if(length(value) > 1){
-        if((condition != "in") | (condition != "not in")){
-            if(condition == "="){
-                condition <- "in"
-            }else{
-                if(condition == "!="){
-                    condition <- "not in"
-                }else{
-                    stop("For length of 'value' > 1, condition has to be '=', '!=',",
-                         " 'in' or 'not in'.")
-                }
-            }
-        }
-    }
-    return(new("AdminrouteFilter", condition=condition, value=as.character(value)))
+    ## if(length(value) > 1){
+    ##     if((condition != "in") | (condition != "not in")){
+    ##         if(condition == "=="){
+    ##             condition <- "in"
+    ##         }else{
+    ##             if(condition == "!="){
+    ##                 condition <- "not in"
+    ##             }else{
+    ##                 stop("For length of 'value' > 1, condition has to be '==', '!=',",
+    ##                      " 'in' or 'not in'.")
+    ##             }
+    ##         }
+    ##     }
+    ## }
+    ## return(new("AdminrouteFilter", condition = condition,
+    ##            value = as.character(value)))
+    res <- new("AdminrouteFilter", condition = condition,
+               value = as.character(value))
+    if (validObject(res))
+        res
 }

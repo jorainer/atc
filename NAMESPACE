@@ -6,9 +6,11 @@ import(RSQLite)
 import(XML)
 importMethodsFrom(AnnotationDbi, dbconn, columns, keytypes, keys,
                   select, mapIds)
-importClassesFrom(ensembldb, BasicFilter)
-importMethodsFrom(ensembldb, listTables, show, where, condition, value,
-                  "value<-", "condition<-", column, listColumns)
+importClassesFrom(AnnotationFilter, "AnnotationFilter", "CharacterFilter",
+                  "AnnotationFilterList")
+importFrom("AnnotationFilter", "AnnotationFilter", "AnnotationFilterList")
+importMethodsFrom(AnnotationFilter, condition, value,
+                  field, supportedFilters)
 ## importClassesFrom(AnnotationHub, AnnotationHub)
 ## importMethodsFrom(AnnotationHub, query, mcols)
 
@@ -17,10 +19,10 @@ export(AtcDb, crunchWHOCC)
 ## Export classes
 exportClasses("AtcDb")
 exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns",
-              "listTables", "listColumns", "atcs")
+              "listTables", "listColumns", "atcs", "supportedFilters")
 
 ## Filter stuff
 export(KeyFilter, NameFilter, LevelFilter, AdminrouteFilter)
 exportClasses("KeyFilter", "NameFilter", "LevelFilter", "AdminrouteFilter")
-exportMethods("where", "column")
+## exportMethods("where", "column")
 

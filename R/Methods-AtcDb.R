@@ -138,11 +138,12 @@ setMethod("atcData", "AtcDb", function(x, columns, key, level, pattern){
 ##
 ##  That's the method to be used if we've got filters etc.
 setMethod("atcs", "AtcDb", function(x, columns=listColumns(x),
-                                    filter=list(), order.by="key", ...){
+                                    filter = AnnotationFilterList(),
+                                    order.by="key", ...){
     startTable <- "atc"
     columns <- cleanColumns(x, columns)
     ## Get the data
-    res <- getWhat(x, columns=columns, filter=filter, join="left join",
+    res <- getWhat(x, columns=columns, filter = filter, join="left join",
                    order.by=order.by, start.table=startTable, ...)
     return(res)
 })
@@ -492,32 +493,64 @@ setMethod("addRequiredJoinTables", "AtcDb", function(x, tables){
 ##  x: the SimpleCompoundDb object.
 ##  filter: the list of filter objects.
 ####------------------------------------------------------------
+## setMethod("cleanFilter", "AtcDb", function(x, filter){
+##     if(missing(filter))
+##         filter <- list()
+##     if(is(filter, "BasicFilter"))
+##         filter <- list(filter)
+##     if(is(filter, "list")){
+##         tabs <- listTables(x)
+##         if(length(filter) > 0){
+##             res <- lapply(filter, function(z){
+##                 tmp <- try(column(z, db=x), TRUE)
+##                 if(inherits(tmp, "try-error")){
+##                     warning("Removed filter ", class(z)[1], " as it is not supported",
+##                             " by the ", class(x)[1], " database.")
+##                     return(NULL)
+##                 }else{
+##                     return(z)
+##                 }
+##             })
+##             res <- res[lengths(res) > 0]
+##         }else{
+##             return(list())
+##         }
+##     }else{
+##         stop("Argument 'filter' has to be either a single filter object inheriting",
+##              " from 'BasicFilter' or a list of such objects!")
+##     }
+## })
 setMethod("cleanFilter", "AtcDb", function(x, filter){
     if(missing(filter))
-        filter <- list()
-    if(is(filter, "BasicFilter"))
-        filter <- list(filter)
-    if(is(filter, "list")){
-        tabs <- listTables(x)
-        if(length(filter) > 0){
-            res <- lapply(filter, function(z){
-                tmp <- try(column(z, db=x), TRUE)
-                if(inherits(tmp, "try-error")){
-                    warning("Removed filter ", class(z)[1], " as it is not supported",
-                            " by the ", class(x)[1], " database.")
-                    return(NULL)
-                }else{
-                    return(z)
-                }
-            })
-            res <- res[lengths(res) > 0]
-        }else{
-            return(list())
-        }
-    }else{
-        stop("Argument 'filter' has to be either a single filter object inheriting",
-             " from 'BasicFilter' or a list of such objects!")
+        filter <- AnnotationFilterList()
+    if (is(filter, "formula"))
+        res <- AnnotationFilter(filter)
+    else res <- filter
+    if (is(res, "AnnotationFilter"))
+        res <- AnnotationFilterList(res)
+    if (!is(res, "AnnotationFilterList")) {
+        if (is(res, "list")) {
+            if (length(res)) {
+                if (!all(unlist(lapply(res, function(z) {
+                    inherits(z, "AnnotationFilter")
+                }), use.names = FALSE)))
+                    stop("One or more elements in 'filter' are not ",
+                         "'AnnotationFilter' objects!")
+                res <- as(res, "AnnotationFilterList")
+                res@logOp <- rep("&", (length(res) - 1))
+            } else res <- AnnotationFilterList()
+        } else
+            stop("'filter' has to be an 'AnnotationFilter', a list of ",
+                 "'AnnotationFilter' objects, an 'AnnotationFilterList' ",
+                 "or a valid filter expression")
     }
+    supp_filters <- supportedFilters(x)
+    have_filters <- unique(.AnnotationFilterClassNames(res))
+    if (!all(have_filters %in% supp_filters))
+        stop("AnnotationFilter classes: ",
+             paste(have_filters[!(have_filters %in% supp_filters)]),
+             " are not supported by AtcDb databases.")
+    res
 })
 
 
@@ -669,5 +702,9 @@ setMethod("getWhat", "AtcDb",
                               skip.order.check=skip.order.check, join=join,
                               start.table=start.table, return.all.columns=return.all.columns)
               return(dbGetQuery(dbconn(x), Q))
+})
+
+setMethod("supportedFilters", "AtcDb", function(object, ...) {
+    sort(c("LevelFilter", "AdminrouteFilter", "KeyFilter", "NameFilter"))
 })
 

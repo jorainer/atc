@@ -1,8 +1,10 @@
 ---
 title: "Working with ATC codes"
+author: "Johannes Rainer"
 graphics: yes
 output:
-  BiocStyle::html_document:
+  BiocStyle::html_document2:
+    toc_float: true
     toc_depth: 2
   BiocStyle::pdf_document:
     toc_depth: 2
@@ -15,9 +17,6 @@ vignette: >
   %\VignetteKeywords{AnnotationData,Homo_sapiens}
 ---
 
-**Authors**: `r packageDescription("atc")$Author`<br />
-**Modified**: 31 May, 2016<br />
-**Compiled**: `r date()`
 
 # Introduction
 
@@ -58,6 +57,7 @@ drugs are classified into groups at 5 different levels:
 
 Note that national versions of the ATC classification exist with eventual
 additional codes and ddds.
+
 
 # Basic usage
 
@@ -104,10 +104,10 @@ head(as.data.frame(atc))
 ```
 
 The arguments `columns` and `filters` allow to define which columns respectively
-entries (rows) should be retrieved from the database. The `atc` package implements
-the same filtering framework than Bioconductor's `ensembldb` package, i.e. a
-single or a `list` of filter objects can be passed to the `atcs` method to query for
-specific entries.
+entries (rows) should be retrieved from the database. The `atc` package supports
+the filtering framework of Bioconductor's `AnnotationFilter` package,
+i.e. supports filtering using a single filter object or a list thereof that can
+be passed to the `atcs` method to retrieve specific data.
 
 The filters that are presently supported by the `atc` package are:
 
@@ -131,9 +131,10 @@ glucocorticoids.
 ```{r }
 ## Use a KeyFilter to search for all entries that start with H02AB
 ## and combine that with administration route being 'O'
-atcs(atc, filter=list(KeyFilter("H02AB%", condition="like"),
+atcs(atc, filter=list(KeyFilter("H02AB", condition = "startsWith"),
 		      AdminrouteFilter("O")))
 ```
+
 
 # Extract ATC codes from the official WHOCC web page
 
@@ -173,6 +174,7 @@ atcDb <- AtcDb("atc.sqlite")
 atcDb
 ```
 
+
 # Database layout
 
 The database consists of 3 tables, `atc`, `ddd` and `metadata`. The columns for
@@ -202,3 +204,4 @@ the individual tables are listed below.
     etc). Values are stored as key-value pairs.
     -   `name`: the name of the key.
     -   `value`: its value.
+
