@@ -17,6 +17,90 @@ levelFromAtc <- function(x){
     return(level)
 }
 
+.levelIdx <- c(`1` = 1, `2` = 3, `3` = 4, `4` = 5, `5` = 7)
+
+#' @title Utilities to work with ATC codes
+#' @description \code{atcLevel} determines the ATC \emph{level} for the
+#'     provided ATC code. Note that the level is purely determined by the
+#'     number of characters. The function does not evaluate whether the
+#'     provided key represents a valid ATC key/code.
+#'     See \code{\link{AtcDb}} for an overview of the various levels.
+#'
+#' @param x For \code{atcLevel} and \code{toAtcLevel}: \code{character}
+#'     representing ATC code(s). 
+#'
+#' @return For \code{atcLevel}: an \code{integer} of length 1 representing the
+#'     ATC level. The function returns \code{NA} if the length of the ATC code
+#'     does not match any of the levels (i.e. the length of the code is not
+#'     equal to 1, 3, 4, 5 or 7).
+#' 
+#' @author Johannes Rainer
+#' 
+#' @rdname atc-utils
+#'
+#' @seealso \code{\link{AtcDb}} for a listing and description of ATC levels.
+#' 
+#' @examples
+#'
+#' ## Get the level for given ATC codes
+#' atcLevel(c("C07AB07", "A12AX"))
+#'
+#' ## Invalid ATC code
+#' atcLevel("AA")
+atcLevel <- function(x) {
+    levelFromAtc(x)
+}
+
+## for a given ATC code, return the lowe level ATC.
+#' @description \code{toAtcLevel} transforms the provided ATC code(s) to a lower
+#'     level code. The function throws an error if the provided code has a lower
+#'     level than the level specified with parameter \code{level}. 
+#'
+#' @return \code{toAtcLevel}: if \code{length(level) == 1}: returns a
+#'     \code{character} of the same length then \code{x}. If
+#'     \code{length(level) > 1}: returns a \code{matrix} of ATC codes, each
+#'     column corresponding to elements in \code{x}, each row to ATC levels.
+#'
+#' @rdname atc-utils
+#'
+#' @examples
+#'
+#' ## Transform an ATC code to a lower level.
+#' toAtcLevel("A01", level = 1)
+#'
+#' ## Transform one ATC code into two different levels
+#' toAtcLevel("A01CD04", level = c(1, 3))
+#' 
+#' ## Transform two codes.
+#' toAtcLevel(c("A01CD", "A01CD04"), level = 1)
+#'
+#' ## Transform two codes in 3 levels
+#' toAtcLevel(c("A01CD", "A01CD04"), level = c(1, 3, 2))
+toAtcLevel <- function(x, level = 1) {
+    levelLength <- length(level)
+    if (any(level < 1 | level > 5))
+        stop("'level' has to be between 1 and 5")
+    res <- sapply(x, function(z, level) {
+        .validAtcLength(z)
+        isLevel <- atcLevel(z)
+        if (any(isLevel < level))
+            stop("ATC level of '", z,"' is lower than the provided level ",
+                 level)
+        substr(rep_len(z, levelLength), start = rep_len(1, levelLength),
+               stop = .levelIdx[level])
+    }, level = level, USE.NAMES = TRUE, simplify = TRUE)
+    res
+}
+
+#' @description Simple check that the length of an ATC code is valid.
+#'
+#' @param x \code{character(1)}.
+#' @noRd
+.validAtcLength <- function(x) {
+    if (!(nchar(x) %in% c(1, 3, 4, 5, 7)))
+        stop("Provided ATC code has invalid length")
+    TRUE
+}
 
 .AnnotationFilterClassNames <- function(x) {
     classes <- lapply(x, function(z) {

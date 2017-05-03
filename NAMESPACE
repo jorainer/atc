@@ -15,7 +15,7 @@ importMethodsFrom(AnnotationFilter, condition, value,
 ## importMethodsFrom(AnnotationHub, query, mcols)
 
 ## Export functions
-export(AtcDb, crunchWHOCC)
+export(AtcDb, crunchWHOCC, toAtcLevel, atcLevel)
 ## Export classes
 exportClasses("AtcDb")
 exportMethods("dbconn", "show", "atcData", "as.data.frame", "keys", "columns",
