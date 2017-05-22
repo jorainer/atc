@@ -56,6 +56,10 @@ atcLevel <- function(x) {
 #'     level code. The function throws an error if the provided code has a lower
 #'     level than the level specified with parameter \code{level}. 
 #'
+#' @param level \code{integer} with the level to which the ATC code(s) should be
+#'     transformed. Can also have \code{length(level) > 1} in which case each
+#'     ATC code is converted into an ATC code for each level.
+#' 
 #' @return \code{toAtcLevel}: if \code{length(level) == 1}: returns a
 #'     \code{character} of the same length then \code{x}. If
 #'     \code{length(level) > 1}: returns a \code{matrix} of ATC codes, each
@@ -133,7 +137,7 @@ toAtcLevel <- function(x, level = 1) {
     }
     if (cond == "==")
         cond <- "="
-    if (cond %in% c("startsWith", "endsWith"))
+    if (cond %in% c("startsWith", "endsWith", "contains"))
         cond <- "like"
     cond
 }
@@ -154,6 +158,8 @@ toAtcLevel <- function(x, level = 1) {
         vals <- paste0("'", unique(x@value), "%'")
     if (condition(x) == "endsWith")
         vals <- paste0("'%", unique(x@value), "'")
+    if (condition(x) == "contains")
+        vals <- paste0("'%", unique(x@value), "%'")
     vals
 }
 
