@@ -12,6 +12,7 @@ test_that("toAtcLevel works", {
 
     toAtcLevel(c("A01CD", "A01CD04"), level = c(1, 3))
     ## Errors
-    expect_error(toAtcLevel("A01", level = 7))
-    expect_error(toAtcLevel("A0", level = 1))
+
+    expect_warning(res <- toAtcLevel(c("A01CD", "A01"), level = 3))
+    expect_equal(res, c(A01CD = "A01C", A01 = NA))
 })

@@ -53,7 +53,7 @@ atcLevel <- function(x) {
 
 ## for a given ATC code, return the lowe level ATC.
 #' @description \code{toAtcLevel} transforms the provided ATC code(s) to a lower
-#'     level code. The function throws an error if the provided code has a lower
+#'     level code. The function returns `NA` for codes that have a lower
 #'     level than the level specified with parameter \code{level}. 
 #'
 #' @param level \code{integer} with the level to which the ATC code(s) should be
@@ -88,11 +88,14 @@ toAtcLevel <- function(x, level = 1) {
         .validAtcLength(z)
         isLevel <- atcLevel(z)
         if (any(isLevel < level))
-            stop("ATC level of '", z,"' is lower than the provided level ",
-                 level)
-        substr(rep_len(z, levelLength), start = rep_len(1, levelLength),
-               stop = .levelIdx[level])
+            NA_character_
+        else
+            substr(rep_len(z, levelLength), start = rep_len(1, levelLength),
+                   stop = .levelIdx[level])
     }, level = level, USE.NAMES = TRUE, simplify = TRUE)
+    if (any(is.na(res)))
+        warning("ATC codes for ", sum(is.na(res)), " elements are lower than",
+                " 'level'. Returning 'NA' for them.")
     res
 }
 

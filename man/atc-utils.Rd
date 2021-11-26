@@ -12,6 +12,10 @@ toAtcLevel(x, level = 1)
 \arguments{
 \item{x}{For \code{atcLevel} and \code{toAtcLevel}: \code{character}
 representing ATC code(s).}
+
+\item{level}{\code{integer} with the level to which the ATC code(s) should be
+transformed. Can also have \code{length(level) > 1} in which case each
+ATC code is converted into an ATC code for each level.}
 }
 \value{
 For \code{atcLevel}: an \code{integer} of length 1 representing the
@@ -32,7 +36,7 @@ For \code{atcLevel}: an \code{integer} of length 1 representing the
     See \code{\link{AtcDb}} for an overview of the various levels.
 
 \code{toAtcLevel} transforms the provided ATC code(s) to a lower
-    level code. The function throws an error if the provided code has a lower
+    level code. The function returns `NA` for codes that have a lower
     level than the level specified with parameter \code{level}.
 }
 \examples{

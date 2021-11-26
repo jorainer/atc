@@ -1,7 +1,7 @@
 Package: atc
 Type: Package
 Title: Data package providing ATC codes
-Version: 0.2.2
+Version: 0.2.3
 Author: J. Rainer
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
 Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML
@@ -21,4 +21,4 @@ Copyright: WHO Collaborating Centre for Drug Statistics Methodology, Oslo, Norwa
 	   Drug Statistics Methodology. Copying and distribution for commercial purposes
 	   is not allowed. Changing or manipulating the material is not allowed.
 NeedsCompilation: no
-RoxygenNote: 6.0.1
+RoxygenNote: 7.1.2
