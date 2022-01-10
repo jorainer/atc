@@ -6,7 +6,8 @@
 ##  The function returns 3 data.frames: atc, ddd and metadata (these are the 3
 ##  tables on which we can build the database).
 ####------------------------------------------------------------
-crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=",
+crunchWHOCC <- function(codes,
+                        baseurl="https://www.whocc.no/atc_ddd_index/?code=",
                         encoding="utf-8"){
     ## That's the vector we're using to define what to read...
     if(!missing(codes)){
@@ -33,7 +34,13 @@ crunchWHOCC <- function(codes, baseurl="http://www.whocc.no/atc_ddd_index/?code=
         currentAtc <- toquery[1]
         ## Record that we did already query that one.
         alreadyQ <- c(alreadyQ, currentAtc)
-        doc <- htmlParse(paste0(baseurl, currentAtc), encoding=encoding)
+        lines <- readLines(paste0(baseurl, currentAtc), encoding = encoding)
+        h1 <- grep("<header>", lines)
+        h2 <- grep("</header>", lines)
+        if (length(h1) && length(h2))
+            lines <- lines[-(h1[1L]:h2[1L])]
+        doc <- htmlParse(lines, encoding = encoding)
+        ## doc <- htmlParse(paste0(baseurl, currentAtc), encoding=encoding)
         ## Extract the links from the content div.
         as <- getNodeSet(doc, "//div[@id='content']//a")
         if(length(as) == 0)
