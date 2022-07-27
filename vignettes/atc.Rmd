@@ -160,10 +160,11 @@ con <- dbConnect(dbDriver("SQLite"), dbname="atc.sqlite")
 dbWriteTable(con, name="atc", whoccAtc$atc, row.names=FALSE)
 dbWriteTable(con, name="ddd", whoccAtc$ddd, row.names=FALSE)
 dbWriteTable(con, name="metadata", whoccAtc$metadata, row.names=FALSE)
+
 ## Create indices for faster access.
-dbGetQuery(con, "create index key_idx on atc (key);")
-dbGetQuery(con, "create index level_idx on atc (level);")
-dbGetQuery(con, "create index ddd_key_idx on ddd (key);")
+dbExecute(con, "create index key_idx on atc (key);")
+dbExecute(con, "create index level_idx on atc (level);")
+dbExecute(con, "create index ddd_key_idx on ddd (key);")
 dbDisconnect(con)
 ```
 
