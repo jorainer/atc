@@ -8,7 +8,7 @@
   to extract the ATC data.
 }
 \usage{
-crunchWHOCC(codes, baseurl = "http://www.whocc.no/atc_ddd_index/?code=",
+crunchWHOCC(codes, baseurl = "https://www.whocc.no/atc_ddd_index/?code=",
             encoding = "utf-8")
 }
 \arguments{

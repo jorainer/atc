@@ -7,8 +7,8 @@
 ##  tables on which we can build the database).
 ####------------------------------------------------------------
 crunchWHOCC <- function(codes,
-                        baseurl="https://www.whocc.no/atc_ddd_index/?code=",
-                        encoding="utf-8"){
+                        baseurl = "https://www.whocc.no/atc_ddd_index/?code=",
+                        encoding = "utf-8") {
     ## That's the vector we're using to define what to read...
     if(!missing(codes)){
         toquery <- codes
@@ -60,13 +60,31 @@ crunchWHOCC <- function(codes,
 
         ## Parse the html table:
         theTable <- readHTMLTable(doc)
-        if(length(theTable) > 0){
-            ## Process the table...
-            theTable <- theTable[[1]]
-            if(!all(c("ATC code", "DDD", "U", "Adm.R", "Note") %in% colnames(theTable))){
-                warning("The extracted table is not in the expected format for ATC: ",
-                        currentAtc)
-            }else{
+        theTable <- theTable[lengths(theTable) > 0]
+        keep <- which(vapply(theTable, function(z) {
+            if (is.data.frame(z) &&
+                length(colnames(z)) > 0 &&
+                grepl("ATC code", colnames(z)[1]))
+                TRUE
+            else FALSE
+        }, logical(1)))
+        if (length(keep) > 1)
+            stop("More than one table with concentrations found for ATC ",
+                 currentAtc, ".")
+        if (length(keep) == 1)
+            theTable <- theTable[[keep]]
+        else theTable <- NULL
+        if (length(theTable)) {
+            colnames(theTable) <- trimws(colnames(theTable),
+                                         whitespace = "[\\h\\v]")
+            theTable <- as.data.frame(
+                lapply(theTable, trimws, whitespace = "[\\h\\v]"),
+                check.names = FALSE)
+            if( !all(c("ATC code", "DDD", "U", "Adm.R", "Note") %in%
+                     colnames(theTable))) {
+                warning("The extracted table is not in the expected ",
+                        "format for ATC: ", currentAtc)
+            } else {
                 theTable <- theTable[theTable[, "DDD"] != "", , drop=FALSE]
                 if(nrow(theTable) > 0){
                     dddatc <- c(dddatc, as.character(theTable[, "ATC code"]))
@@ -92,6 +110,7 @@ crunchWHOCC <- function(codes,
     }
     atc <- cbind(key=atcCodes, name=atcNames)
     atc <- unique(atc)
+    atc <- atc[!grepl("^Hide", atc[, "name"]), , drop = FALSE]
     ddd <- data.frame(key=dddatc, ddd=ddds, unit=units, administration_route=admR,
                       note=notes, stringsAsFactors=FALSE)
     ## Add ATC codes for "" rows

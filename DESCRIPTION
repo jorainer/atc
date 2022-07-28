@@ -1,7 +1,7 @@
 Package: atc
 Type: Package
 Title: Data package providing ATC codes
-Version: 0.2.4
+Version: 0.2.5
 Author: J. Rainer
 Maintainer: Johannes Rainer <johannes.rainer@eurac.edu>
 Imports: BiocGenerics, utils, RSQLite, DBI, AnnotationDbi, XML
